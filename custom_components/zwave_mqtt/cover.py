@@ -35,18 +35,17 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     def async_add_cover(values):
         """Add Z-Wave Cover."""
         # Specific Cover Types
-        if values.primary.command_class == CommandClass.SWITCH_MULTILEVEL:
-            if (
-                values.primary.node.node_manufacturer_id == MANUFACTURER_ID_FIBARO
-                and values.primary.node.node_product_type == PRODUCT_TYPE_FIBARO_FGRM222
-            ):
-                cover = FibaroFGRM222Cover(values)
-            else:
-                cover = ZWaveCover(values)
-
-        else:
+        if values.primary.command_class != CommandClass.SWITCH_MULTILEVEL:
             _LOGGER.warning("Cover not implemented for values %s", values.primary)
             return
+
+        if (
+            values.primary.node.node_manufacturer_id == MANUFACTURER_ID_FIBARO
+            and values.primary.node.node_product_type == PRODUCT_TYPE_FIBARO_FGRM222
+        ):
+            cover = FibaroFGRM222Cover(values)
+        else:
+            cover = ZWaveCover(values)
 
         async_add_entities([cover])
 
